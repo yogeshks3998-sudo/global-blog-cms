@@ -24,7 +24,8 @@ export const env = {
       'http://127.0.0.1:3000',
       'http://localhost:4173',
       'http://127.0.0.1:4173',
-      'https://global-blog-cms.vercel.app'
+      'https://global-blog-cms.vercel.app',
+      'https://chimerical-brigadeiros-5e00f6.netlify.app'
     ].join(','),
   rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   rateLimitMax: Number(process.env.RATE_LIMIT_MAX) || 100,

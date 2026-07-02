@@ -39,7 +39,10 @@ const isAllowedOrigin = (origin) => {
       hostname.startsWith('10.') ||
       /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname);
 
-    return (protocol === 'https:' && hostname.endsWith('.vercel.app')) || (protocol === 'http:' && isLocalNetwork);
+    const isSupportedPreviewHost =
+      protocol === 'https:' && (hostname.endsWith('.vercel.app') || hostname.endsWith('.netlify.app'));
+
+    return isSupportedPreviewHost || (protocol === 'http:' && isLocalNetwork);
   } catch {
     return false;
   }
