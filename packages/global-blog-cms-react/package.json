@@ -1,0 +1,39 @@
+{
+  "name": "@global-blog-cms/react",
+  "version": "1.0.0",
+  "description": "Reusable React blog UI for Global Blog CMS client websites.",
+  "type": "module",
+  "main": "dist/index.umd.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "scripts": {
+    "build": "vite build && node scripts/write-types.mjs",
+    "dev": "vite --host 127.0.0.1 --port 5190"
+  },
+  "keywords": [
+    "blog",
+    "cms",
+    "react",
+    "multi-tenant"
+  ],
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "vite": "^6.3.5"
+  }
+}

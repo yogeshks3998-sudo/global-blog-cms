@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "build:cms-package": "npm --prefix packages/global-blog-cms-react run build",
+    "dev:cms-package": "npm --prefix packages/global-blog-cms-react run dev"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

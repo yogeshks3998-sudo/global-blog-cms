@@ -1,0 +1,330 @@
+.gbcms-widget {
+  --gbcms-bg: #ffffff;
+  --gbcms-surface: #ffffff;
+  --gbcms-text: #111827;
+  --gbcms-muted: #667085;
+  --gbcms-border: #d9e1ec;
+  --gbcms-primary: #2563eb;
+  --gbcms-primary-hover: #1d4ed8;
+  --gbcms-success-bg: #ecfdf3;
+  --gbcms-success-text: #027a48;
+  --gbcms-error-bg: #fff1f3;
+  --gbcms-error-text: #c01048;
+  color: var(--gbcms-text);
+  background: var(--gbcms-bg);
+  font-family: inherit;
+  line-height: 1.5;
+  width: 100%;
+}
+
+.gbcms-theme-dark {
+  --gbcms-bg: #0f172a;
+  --gbcms-surface: #111c33;
+  --gbcms-text: #f8fafc;
+  --gbcms-muted: #b6c2d2;
+  --gbcms-border: #2c3a52;
+  --gbcms-primary: #60a5fa;
+  --gbcms-primary-hover: #93c5fd;
+}
+
+.gbcms-widget *,
+.gbcms-widget *::before,
+.gbcms-widget *::after {
+  box-sizing: border-box;
+}
+
+.gbcms-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.gbcms-header h1,
+.gbcms-detail h1,
+.gbcms-form h2,
+.gbcms-card h2 {
+  color: var(--gbcms-text);
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.gbcms-header h1 {
+  font-size: clamp(32px, 5vw, 54px);
+  line-height: 1.08;
+}
+
+.gbcms-header p,
+.gbcms-form-heading p,
+.gbcms-card p {
+  color: var(--gbcms-muted);
+  margin: 8px 0 0;
+}
+
+.gbcms-button,
+.gbcms-link-button {
+  appearance: none;
+  border: 1px solid var(--gbcms-border);
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  min-height: 42px;
+  padding: 9px 16px;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, opacity 160ms ease;
+}
+
+.gbcms-button {
+  background: var(--gbcms-surface);
+  color: var(--gbcms-text);
+}
+
+.gbcms-button:hover:not(:disabled) {
+  border-color: var(--gbcms-primary);
+  color: var(--gbcms-primary);
+}
+
+.gbcms-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.gbcms-button-primary {
+  background: var(--gbcms-primary);
+  border-color: var(--gbcms-primary);
+  color: #ffffff;
+}
+
+.gbcms-button-primary:hover:not(:disabled) {
+  background: var(--gbcms-primary-hover);
+  border-color: var(--gbcms-primary-hover);
+  color: #ffffff;
+}
+
+.gbcms-button-muted {
+  color: var(--gbcms-muted);
+}
+
+.gbcms-link-button {
+  background: transparent;
+  border-color: transparent;
+  color: var(--gbcms-primary);
+  min-height: auto;
+  padding: 0;
+}
+
+.gbcms-link-button:hover {
+  color: var(--gbcms-primary-hover);
+  text-decoration: underline;
+}
+
+.gbcms-alert {
+  border-radius: 8px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+}
+
+.gbcms-alert-error {
+  background: var(--gbcms-error-bg);
+  color: var(--gbcms-error-text);
+}
+
+.gbcms-alert-success {
+  background: var(--gbcms-success-bg);
+  color: var(--gbcms-success-text);
+}
+
+.gbcms-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.gbcms-toolbar input,
+.gbcms-form input,
+.gbcms-form textarea {
+  background: var(--gbcms-surface);
+  border: 1px solid var(--gbcms-border);
+  border-radius: 8px;
+  color: var(--gbcms-text);
+  font: inherit;
+  min-height: 44px;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.gbcms-toolbar input:focus,
+.gbcms-form input:focus,
+.gbcms-form textarea:focus {
+  border-color: var(--gbcms-primary);
+  outline: 2px solid color-mix(in srgb, var(--gbcms-primary) 20%, transparent);
+}
+
+.gbcms-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gbcms-card {
+  background: var(--gbcms-surface);
+  border: 1px solid var(--gbcms-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gbcms-card-image {
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.gbcms-card-body {
+  padding: 18px;
+}
+
+.gbcms-card h2 {
+  font-size: 20px;
+  line-height: 1.25;
+  margin-top: 10px;
+}
+
+.gbcms-card p {
+  margin-bottom: 16px;
+}
+
+.gbcms-meta {
+  color: var(--gbcms-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.gbcms-meta span:not(:last-child)::after {
+  color: var(--gbcms-border);
+  content: "/";
+  margin-left: 10px;
+}
+
+.gbcms-state {
+  border: 1px dashed var(--gbcms-border);
+  border-radius: 8px;
+  color: var(--gbcms-muted);
+  padding: 34px;
+  text-align: center;
+}
+
+.gbcms-pagination {
+  align-items: center;
+  color: var(--gbcms-muted);
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.gbcms-detail {
+  max-width: 860px;
+}
+
+.gbcms-detail-image {
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  display: block;
+  margin: 18px 0 22px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.gbcms-detail h1 {
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.12;
+  margin: 12px 0 14px;
+}
+
+.gbcms-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.gbcms-tags span {
+  background: color-mix(in srgb, var(--gbcms-primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gbcms-primary) 18%, transparent);
+  border-radius: 999px;
+  color: var(--gbcms-primary);
+  font-size: 13px;
+  padding: 4px 10px;
+}
+
+.gbcms-content {
+  color: var(--gbcms-text);
+  font-size: 18px;
+  white-space: pre-wrap;
+}
+
+.gbcms-form {
+  background: var(--gbcms-surface);
+  border: 1px solid var(--gbcms-border);
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  max-width: 820px;
+  padding: 24px;
+}
+
+.gbcms-form-heading {
+  margin-bottom: 4px;
+}
+
+.gbcms-form-heading h2 {
+  font-size: 28px;
+  margin-top: 8px;
+}
+
+.gbcms-form label {
+  color: var(--gbcms-text);
+  display: grid;
+  font-weight: 600;
+  gap: 7px;
+}
+
+.gbcms-form-row {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gbcms-form textarea {
+  min-height: 220px;
+  resize: vertical;
+}
+
+@media (max-width: 860px) {
+  .gbcms-header,
+  .gbcms-toolbar {
+    flex-direction: column;
+  }
+
+  .gbcms-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .gbcms-grid,
+  .gbcms-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .gbcms-header h1 {
+    font-size: 34px;
+  }
+
+  .gbcms-form {
+    padding: 18px;
+  }
+}
