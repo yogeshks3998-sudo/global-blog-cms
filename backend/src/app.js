@@ -68,6 +68,7 @@ app.use(apiLimiter);
 
 app.use('/uploads', express.static(path.resolve(__dirname, '../..', env.uploadDir)));
 
+app.use('/', healthRoutes);
 app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', dashboardRoutes);
