@@ -1,6 +1,19 @@
 import type { Blog, BlogStatus } from '../mockData';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000/api';
+const isLocalHost = (hostname: string) =>
+  hostname === 'localhost' ||
+  hostname === '127.0.0.1' ||
+  hostname === '0.0.0.0' ||
+  hostname.startsWith('192.168.') ||
+  hostname.startsWith('10.') ||
+  /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname);
+
+const DEFAULT_API_BASE_URL =
+  typeof window !== 'undefined' && !isLocalHost(window.location.hostname)
+    ? 'https://global-blog-cms-api.onrender.com/api'
+    : `${typeof window !== 'undefined' ? window.location.protocol : 'http:'}//127.0.0.1:5000/api`;
+
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, '');
 const UPLOAD_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, '');
 const TOKEN_KEY = 'global_blog_cms_token';
 const USER_KEY = 'global_blog_cms_user';
