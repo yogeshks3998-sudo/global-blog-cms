@@ -1,0 +1,14 @@
+export const USER_ROLES = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  CLIENT_ADMIN: 'CLIENT_ADMIN'
+};
+
+export const ACCOUNT_STATUS = {
+  ACTIVE: 'ACTIVE',
+  DISABLED: 'DISABLED'
+};
+
+export const BLOG_STATUS = {
+  PENDING: 'PENDING',
+  PUBLISHED: 'PUBLISHED'
+};
