@@ -13,7 +13,12 @@ const DEFAULT_API_BASE_URL =
     ? 'https://global-blog-cms-api.onrender.com/api'
     : `${typeof window !== 'undefined' ? window.location.protocol : 'http:'}//127.0.0.1:5000/api`;
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, '');
+const normalizeApiBaseUrl = (url: string) => {
+  const trimmed = url.replace(/\/+$/, '');
+  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+};
+
+const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL);
 const UPLOAD_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, '');
 const TOKEN_KEY = 'global_blog_cms_token';
 const USER_KEY = 'global_blog_cms_user';
