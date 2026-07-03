@@ -125,7 +125,9 @@ export const createBlogApi = (apiUrl: string, apiKey: string) => {
   const imageUrl = (path?: string | null) => {
     if (!path) return '';
     if (/^https?:\/\//i.test(path)) return path;
-    return `${baseUrl.replace(/\/api$/, '')}/${path.replace(/^\/+/, '')}`;
+
+    const normalizedPath = path.replace(/\\/g, '/').replace(/^\/+/, '');
+    return `${baseUrl.replace(/\/api$/, '')}/${normalizedPath}`;
   };
 
   return {

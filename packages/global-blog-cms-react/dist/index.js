@@ -1,86 +1,91 @@
-var J = Object.defineProperty;
-var Q = (a, s, c) => s in a ? J(a, s, { enumerable: !0, configurable: !0, writable: !0, value: c }) : a[s] = c;
-var k = (a, s, c) => Q(a, typeof s != "symbol" ? s + "" : s, c);
-import { jsxs as n, jsx as e, Fragment as x } from "react/jsx-runtime";
-import { useMemo as V, useState as y, useEffect as Y } from "react";
-class I extends Error {
-  constructor(c, d, N) {
-    super(c);
-    k(this, "status");
-    k(this, "errors");
-    this.name = "BlogApiError", this.status = d, this.errors = N;
+var V = Object.defineProperty;
+var _ = (a, s, m) => s in a ? V(a, s, { enumerable: !0, configurable: !0, writable: !0, value: m }) : a[s] = m;
+var A = (a, s, m) => _(a, typeof s != "symbol" ? s + "" : s, m);
+import { jsxs as r, jsx as e, Fragment as W } from "react/jsx-runtime";
+import { useMemo as X, useState as u, useEffect as Z } from "react";
+class C extends Error {
+  constructor(m, g, b) {
+    super(m);
+    A(this, "status");
+    A(this, "errors");
+    this.name = "BlogApiError", this.status = g, this.errors = b;
   }
 }
-const _ = (a) => {
+const K = (a) => {
   const s = a.replace(/\/+$/, "");
   return s.endsWith("/api") ? s : `${s}/api`;
-}, X = (a) => {
-  var d, N, t;
+}, ee = (a) => {
+  var g, b, t;
   const s = new URLSearchParams();
-  a.page && s.set("page", String(a.page)), a.limit && s.set("limit", String(a.limit)), (d = a.search) != null && d.trim() && s.set("search", a.search.trim()), (N = a.category) != null && N.trim() && s.set("category", a.category.trim()), (t = a.tag) != null && t.trim() && s.set("tag", a.tag.trim());
-  const c = s.toString();
-  return c ? `?${c}` : "";
-}, Z = (a, s) => {
-  const c = _(a), d = async (t, g = {}) => {
-    var u;
+  a.page && s.set("page", String(a.page)), a.limit && s.set("limit", String(a.limit)), (g = a.search) != null && g.trim() && s.set("search", a.search.trim()), (b = a.category) != null && b.trim() && s.set("category", a.category.trim()), (t = a.tag) != null && t.trim() && s.set("tag", a.tag.trim());
+  const m = s.toString();
+  return m ? `?${m}` : "";
+}, te = (a, s) => {
+  const m = K(a), g = async (t, c = {}) => {
+    var d;
     if (!s)
-      throw new I("Missing Global Blog CMS API key.", 401);
-    const i = new Headers(g.headers);
-    i.set("x-api-key", s), !(g.body instanceof FormData) && !i.has("Content-Type") && i.set("Content-Type", "application/json");
-    let f;
+      throw new C("Missing Global Blog CMS API key.", 401);
+    const i = new Headers(c.headers);
+    i.set("x-api-key", s), !(c.body instanceof FormData) && !i.has("Content-Type") && i.set("Content-Type", "application/json");
+    let y;
     try {
-      f = await fetch(`${c}${t}`, {
-        ...g,
+      y = await fetch(`${m}${t}`, {
+        ...c,
         headers: i
       });
-    } catch (r) {
-      throw new I(r instanceof Error ? r.message : "CMS API request failed.", 0);
+    } catch (l) {
+      throw new C(l instanceof Error ? l.message : "CMS API request failed.", 0);
     }
-    const o = await f.json().catch(() => null);
-    if (!f.ok || !(o != null && o.success)) {
-      const r = (u = o == null ? void 0 : o.errors) == null ? void 0 : u.map((m) => m.message).join(", ");
-      throw new I(
-        r || (o == null ? void 0 : o.message) || "CMS API request failed.",
-        f.status,
+    const o = await y.json().catch(() => null);
+    if (!y.ok || !(o != null && o.success)) {
+      const l = (d = o == null ? void 0 : o.errors) == null ? void 0 : d.map((h) => h.message).join(", ");
+      throw new C(
+        l || (o == null ? void 0 : o.message) || "CMS API request failed.",
+        y.status,
         o == null ? void 0 : o.errors
       );
     }
     return o;
   };
   return {
-    imageUrl: (t) => t ? /^https?:\/\//i.test(t) ? t : `${c.replace(/\/api$/, "")}/${t.replace(/^\/+/, "")}` : "",
+    imageUrl: (t) => {
+      if (!t) return "";
+      if (/^https?:\/\//i.test(t)) return t;
+      const c = t.replace(/\\/g, "/").replace(/^\/+/, "");
+      return `${m.replace(/\/api$/, "")}/${c}`;
+    },
     async getBlogs(t = {}) {
       var i;
-      const g = await d(`/blogs${X(t)}`);
+      const c = await g(`/blogs${ee(t)}`);
       return {
-        blogs: ((i = g.data) == null ? void 0 : i.blogs) || [],
-        meta: g.meta
+        blogs: ((i = c.data) == null ? void 0 : i.blogs) || [],
+        meta: c.meta
       };
     },
     async getLatestBlogs(t = 5) {
       var i;
-      return ((i = (await d(`/blogs/latest?limit=${t}`)).data) == null ? void 0 : i.blogs) || [];
+      return ((i = (await g(`/blogs/latest?limit=${t}`)).data) == null ? void 0 : i.blogs) || [];
     },
     async getBlog(t) {
       var i;
-      const g = await d(`/blogs/${encodeURIComponent(t)}`);
-      if (!((i = g.data) != null && i.blog))
-        throw new I("Blog not found.", 404);
-      return g.data.blog;
+      const c = await g(`/blogs/${encodeURIComponent(t)}`);
+      if (!((i = c.data) != null && i.blog))
+        throw new C("Blog not found.", 404);
+      return c.data.blog;
     },
     async submitBlog(t) {
-      var f, o, u;
+      var y, o, d;
       if (!!t.featuredImage) {
-        const r = new FormData();
-        r.set("title", t.title), r.set("authorName", t.authorName), r.set("authorEmail", t.authorEmail), r.set("category", t.category), r.set("content", t.content), (f = t.tags) != null && f.length && r.set("tags", t.tags.join(",")), t.featuredImage && r.set("featuredImage", t.featuredImage);
-        const m = await d("/blogs/submit", {
+        const l = new FormData();
+        l.set("title", t.title), l.set("authorName", t.authorName), l.set("authorEmail", t.authorEmail), l.set("category", t.category), l.set("content", t.content), (y = t.tags) != null && y.length && l.set("tags", t.tags.join(",")), t.featuredImage && l.set("featuredImage", t.featuredImage);
+        const h = await g("/blogs/submit", {
           method: "POST",
-          body: r
+          body: l
         });
-        if (!((o = m.data) != null && o.blog)) throw new I("Blog submission response is missing data.", 500);
-        return m.data.blog;
+        if (!((o = h.data) != null && o.blog)) throw new C("Blog submission response is missing data.", 500);
+        return h.data.blog;
       }
-      const i = await d("/blogs/submit", {
+      const i = await g("/blogs/submit", {
         method: "POST",
         body: JSON.stringify({
           title: t.title,
@@ -91,211 +96,259 @@ const _ = (a) => {
           tags: t.tags || []
         })
       });
-      if (!((u = i.data) != null && u.blog)) throw new I("Blog submission response is missing data.", 500);
+      if (!((d = i.data) != null && d.blog)) throw new C("Blog submission response is missing data.", 500);
       return i.data.blog;
     }
   };
-}, O = (a) => new Intl.DateTimeFormat(void 0, {
+}, R = (a) => new Intl.DateTimeFormat(void 0, {
   year: "numeric",
   month: "short",
   day: "numeric"
-}).format(new Date(a)), K = (a) => a.replace(/\s+/g, " ").trim().slice(0, 180), ee = (a) => a.split(",").map((s) => s.trim()).filter(Boolean);
-function re({
+}).format(new Date(a)), ae = (a) => a.replace(/\s+/g, " ").trim().slice(0, 180), se = (a) => a.split(",").map((s) => s.trim()).filter(Boolean);
+function z({
+  src: a,
+  alt: s,
+  fallback: m,
+  className: g,
+  placeholderClassName: b
+}) {
+  const [t, c] = u(!1);
+  return !a || t ? /* @__PURE__ */ e("span", { className: b, children: m }) : /* @__PURE__ */ e("img", { className: g, src: a, alt: s, loading: "lazy", onError: () => c(!0) });
+}
+function ie({
   apiUrl: a,
   apiKey: s,
-  className: c = "",
-  theme: d = "light",
-  pageSize: N = 9,
+  className: m = "",
+  theme: g = "light",
+  pageSize: b = 9,
   showSubmitForm: t = !0,
-  title: g = "Blogs",
+  title: c = "Blogs",
   description: i = "Read the latest published articles or submit your own story for review.",
-  emptyMessage: f = "No published blogs are available yet.",
+  emptyMessage: y = "No published blogs are available yet.",
   renderHeader: o
 }) {
-  const u = V(() => Z(a, s), [a, s]), [r, m] = y({ name: "list", page: 1 }), [A, $] = y([]), [b, P] = y(null), [C, D] = y(1), [L, M] = y(""), [E, T] = y(""), [S, v] = y(!1), [U, B] = y(""), [q, j] = y(""), R = async (l, w) => {
-    var h;
-    v(!0), B("");
+  const d = X(() => te(a, s), [a, s]), [l, h] = u({ name: "list", page: 1 }), [$, P] = u([]), [p, U] = u(null), [E, D] = u(1), [F, L] = u(""), [I, M] = u(""), [v, S] = u(!1), [k, T] = u(!1), [q, B] = u(""), [j, x] = u(""), G = async (n, w) => {
+    var f;
+    S(!0), B("");
     try {
-      const p = await u.getBlogs({
-        page: l,
-        limit: N,
+      const N = await d.getBlogs({
+        page: n,
+        limit: b,
         search: w
       });
-      $(p.blogs), D(((h = p.meta) == null ? void 0 : h.totalPages) || 1);
-    } catch (p) {
-      B(p instanceof Error ? p.message : "Unable to load blogs."), $([]), D(1);
+      P(N.blogs), D(((f = N.meta) == null ? void 0 : f.totalPages) || 1);
+    } catch (N) {
+      B(N instanceof Error ? N.message : "Unable to load blogs."), P([]), D(1);
     } finally {
-      v(!1);
+      S(!1);
     }
-  }, W = async (l) => {
-    v(!0), B(""), P(null);
+  }, Y = async (n) => {
+    S(!0), B(""), U(null);
     try {
-      P(await u.getBlog(l));
+      U(await d.getBlog(n));
     } catch (w) {
       B(w instanceof Error ? w.message : "Unable to load blog.");
     } finally {
-      v(!1);
+      S(!1);
     }
   };
-  Y(() => {
-    r.name === "list" && R(r.page, E), r.name === "detail" && W(r.slug);
-  }, [r, E, N, u]);
-  const z = (l) => {
-    l.preventDefault(), T(L), m({ name: "list", page: 1 });
-  }, G = async (l) => {
-    l.preventDefault(), v(!0), B(""), j("");
-    const w = l.currentTarget, h = new FormData(w), p = h.get("featuredImage"), H = {
-      title: String(h.get("title") || ""),
-      authorName: String(h.get("authorName") || ""),
-      authorEmail: String(h.get("authorEmail") || ""),
-      category: String(h.get("category") || ""),
-      content: String(h.get("content") || ""),
-      tags: ee(String(h.get("tags") || "")),
-      featuredImage: p instanceof File && p.size > 0 ? p : null
+  Z(() => {
+    l.name === "list" && G(l.page, I), l.name === "detail" && Y(l.slug);
+  }, [l, I, b, d]);
+  const H = (n) => {
+    n.preventDefault(), M(F), h({ name: "list", page: 1 });
+  }, J = async (n) => {
+    n.preventDefault(), S(!0), B(""), x("");
+    const w = n.currentTarget, f = new FormData(w), N = f.get("featuredImage"), Q = {
+      title: String(f.get("title") || ""),
+      authorName: String(f.get("authorName") || ""),
+      authorEmail: String(f.get("authorEmail") || ""),
+      category: String(f.get("category") || ""),
+      content: String(f.get("content") || ""),
+      tags: se(String(f.get("tags") || "")),
+      featuredImage: N instanceof File && N.size > 0 ? N : null
     };
     try {
-      await u.submitBlog(H), w.reset(), j("Your blog has been submitted for approval.");
-    } catch (F) {
-      B(F instanceof Error ? F.message : "Unable to submit blog.");
+      await d.submitBlog(Q), w.reset(), x("Your blog has been submitted for approval."), T(!1);
+    } catch (O) {
+      B(O instanceof Error ? O.message : "Unable to submit blog.");
     } finally {
-      v(!1);
+      S(!1);
     }
   };
-  return /* @__PURE__ */ n("section", { className: `gbcms-widget gbcms-theme-${d} ${c}`.trim(), children: [
-    /* @__PURE__ */ e("header", { className: "gbcms-header", children: o || /* @__PURE__ */ n(x, { children: [
-      /* @__PURE__ */ n("div", { children: [
-        /* @__PURE__ */ e("h1", { children: g }),
-        /* @__PURE__ */ e("p", { children: i })
-      ] }),
-      t && /* @__PURE__ */ e("button", { className: "gbcms-button gbcms-button-primary", type: "button", onClick: () => m({ name: "write" }), children: "Write Blog" })
+  return /* @__PURE__ */ r("section", { className: `gbcms-widget gbcms-theme-${g} ${m}`.trim(), children: [
+    /* @__PURE__ */ e("header", { className: "gbcms-header", children: o || /* @__PURE__ */ r("div", { children: [
+      /* @__PURE__ */ e("span", { className: "gbcms-eyebrow", children: "Client Blog" }),
+      /* @__PURE__ */ e("h1", { children: c }),
+      /* @__PURE__ */ e("p", { children: i })
     ] }) }),
-    U && /* @__PURE__ */ e("div", { className: "gbcms-alert gbcms-alert-error", children: U }),
-    q && /* @__PURE__ */ e("div", { className: "gbcms-alert gbcms-alert-success", children: q }),
-    r.name === "list" && /* @__PURE__ */ n(x, { children: [
-      /* @__PURE__ */ n("form", { className: "gbcms-toolbar", onSubmit: z, children: [
+    q && /* @__PURE__ */ e("div", { className: "gbcms-alert gbcms-alert-error", children: q }),
+    j && /* @__PURE__ */ e("div", { className: "gbcms-alert gbcms-alert-success", children: j }),
+    l.name === "list" && /* @__PURE__ */ r(W, { children: [
+      /* @__PURE__ */ r("form", { className: "gbcms-toolbar", onSubmit: H, children: [
         /* @__PURE__ */ e(
           "input",
           {
-            value: L,
-            onChange: (l) => M(l.target.value),
+            value: F,
+            onChange: (n) => L(n.target.value),
             placeholder: "Search blogs",
             "aria-label": "Search blogs"
           }
         ),
         /* @__PURE__ */ e("button", { className: "gbcms-button", type: "submit", children: "Search" }),
-        E && /* @__PURE__ */ e(
+        I && /* @__PURE__ */ e(
           "button",
           {
             className: "gbcms-button gbcms-button-muted",
             type: "button",
             onClick: () => {
-              M(""), T(""), m({ name: "list", page: 1 });
+              L(""), M(""), h({ name: "list", page: 1 });
             },
             children: "Clear"
           }
         )
       ] }),
-      S ? /* @__PURE__ */ e("div", { className: "gbcms-state", children: "Loading blogs..." }) : A.length === 0 ? /* @__PURE__ */ e("div", { className: "gbcms-state", children: f }) : /* @__PURE__ */ e("div", { className: "gbcms-grid", children: A.map((l) => /* @__PURE__ */ n("article", { className: "gbcms-card", children: [
-        l.featuredImage && /* @__PURE__ */ e("img", { className: "gbcms-card-image", src: u.imageUrl(l.featuredImage), alt: l.title, loading: "lazy" }),
-        /* @__PURE__ */ n("div", { className: "gbcms-card-body", children: [
-          /* @__PURE__ */ n("div", { className: "gbcms-meta", children: [
-            /* @__PURE__ */ e("span", { children: l.category }),
-            /* @__PURE__ */ e("span", { children: O(l.createdAt) })
+      v ? /* @__PURE__ */ e("div", { className: "gbcms-state", children: "Loading blogs..." }) : $.length === 0 ? /* @__PURE__ */ e("div", { className: "gbcms-state", children: y }) : /* @__PURE__ */ e("div", { className: "gbcms-grid", children: $.map((n) => /* @__PURE__ */ r("article", { className: "gbcms-card", children: [
+        /* @__PURE__ */ e("button", { className: "gbcms-card-media", type: "button", onClick: () => h({ name: "detail", slug: n.slug }), children: /* @__PURE__ */ e(
+          z,
+          {
+            src: d.imageUrl(n.featuredImage),
+            alt: n.title,
+            fallback: n.category.slice(0, 2).toUpperCase(),
+            className: "gbcms-card-image",
+            placeholderClassName: "gbcms-card-placeholder"
+          }
+        ) }),
+        /* @__PURE__ */ r("div", { className: "gbcms-card-body", children: [
+          /* @__PURE__ */ r("div", { className: "gbcms-meta", children: [
+            /* @__PURE__ */ e("span", { children: n.category }),
+            /* @__PURE__ */ e("span", { children: R(n.createdAt) })
           ] }),
-          /* @__PURE__ */ e("h2", { children: l.title }),
-          /* @__PURE__ */ e("p", { children: K(l.content) }),
-          /* @__PURE__ */ e("button", { className: "gbcms-link-button", type: "button", onClick: () => m({ name: "detail", slug: l.slug }), children: "Read more" })
+          /* @__PURE__ */ e("h2", { children: n.title }),
+          /* @__PURE__ */ e("p", { children: ae(n.content) }),
+          /* @__PURE__ */ e("button", { className: "gbcms-read-link", type: "button", onClick: () => h({ name: "detail", slug: n.slug }), children: "Read article" })
         ] })
-      ] }, l._id)) }),
-      C > 1 && /* @__PURE__ */ n("nav", { className: "gbcms-pagination", "aria-label": "Blog pagination", children: [
+      ] }, n._id)) }),
+      E > 1 && /* @__PURE__ */ r("nav", { className: "gbcms-pagination", "aria-label": "Blog pagination", children: [
         /* @__PURE__ */ e(
           "button",
           {
             className: "gbcms-button",
             type: "button",
-            disabled: r.page <= 1 || S,
-            onClick: () => m({ name: "list", page: Math.max(1, r.page - 1) }),
+            disabled: l.page <= 1 || v,
+            onClick: () => h({ name: "list", page: Math.max(1, l.page - 1) }),
             children: "Previous"
           }
         ),
-        /* @__PURE__ */ n("span", { children: [
+        /* @__PURE__ */ r("span", { children: [
           "Page ",
-          r.page,
+          l.page,
           " of ",
-          C
+          E
         ] }),
         /* @__PURE__ */ e(
           "button",
           {
             className: "gbcms-button",
             type: "button",
-            disabled: r.page >= C || S,
-            onClick: () => m({ name: "list", page: Math.min(C, r.page + 1) }),
+            disabled: l.page >= E || v,
+            onClick: () => h({ name: "list", page: Math.min(E, l.page + 1) }),
             children: "Next"
           }
         )
+      ] }),
+      t && /* @__PURE__ */ r("section", { className: "gbcms-submit-panel", children: [
+        /* @__PURE__ */ r("div", { className: "gbcms-submit-intro", children: [
+          /* @__PURE__ */ e("span", { className: "gbcms-eyebrow", children: "Write for us" }),
+          /* @__PURE__ */ e("h2", { children: "Submit your blog for review" }),
+          /* @__PURE__ */ e("p", { children: "Share an article with this website. It will appear publicly after the site admin approves it." })
+        ] }),
+        /* @__PURE__ */ e(
+          "button",
+          {
+            className: "gbcms-button gbcms-button-primary",
+            type: "button",
+            onClick: () => {
+              T((n) => !n), x("");
+            },
+            "aria-expanded": k,
+            children: k ? "Close Form" : "Write Blog"
+          }
+        ),
+        k && /* @__PURE__ */ r("form", { className: "gbcms-form", onSubmit: J, children: [
+          /* @__PURE__ */ r("div", { className: "gbcms-form-heading", children: [
+            /* @__PURE__ */ e("h3", { children: "Blog Details" }),
+            /* @__PURE__ */ e("p", { children: "Add a featured image so your article card and detail page look complete." })
+          ] }),
+          /* @__PURE__ */ r("label", { children: [
+            "Title",
+            /* @__PURE__ */ e("input", { name: "title", required: !0, maxLength: 160, placeholder: "Enter blog title" })
+          ] }),
+          /* @__PURE__ */ r("div", { className: "gbcms-form-row", children: [
+            /* @__PURE__ */ r("label", { children: [
+              "Author name",
+              /* @__PURE__ */ e("input", { name: "authorName", required: !0, maxLength: 100, placeholder: "Your name" })
+            ] }),
+            /* @__PURE__ */ r("label", { children: [
+              "Author email",
+              /* @__PURE__ */ e("input", { name: "authorEmail", required: !0, type: "email", maxLength: 160, placeholder: "you@example.com" })
+            ] })
+          ] }),
+          /* @__PURE__ */ r("label", { children: [
+            "Category",
+            /* @__PURE__ */ e("input", { name: "category", required: !0, maxLength: 80, placeholder: "Category" })
+          ] }),
+          /* @__PURE__ */ r("label", { children: [
+            "Tags",
+            /* @__PURE__ */ e("input", { name: "tags", placeholder: "SEO, Web Design, Marketing" })
+          ] }),
+          /* @__PURE__ */ r("label", { children: [
+            "Featured image",
+            /* @__PURE__ */ e("input", { name: "featuredImage", type: "file", accept: "image/jpeg,image/jpg,image/png,image/webp" })
+          ] }),
+          /* @__PURE__ */ r("label", { children: [
+            "Content",
+            /* @__PURE__ */ e("textarea", { name: "content", required: !0, rows: 10, minLength: 50, placeholder: "Write your blog content here..." })
+          ] }),
+          /* @__PURE__ */ e("button", { className: "gbcms-button gbcms-button-primary", type: "submit", disabled: v, children: v ? "Submitting..." : "Submit for Approval" })
+        ] })
       ] })
     ] }),
-    r.name === "detail" && /* @__PURE__ */ n("article", { className: "gbcms-detail", children: [
-      /* @__PURE__ */ e("button", { className: "gbcms-link-button", type: "button", onClick: () => m({ name: "list", page: 1 }), children: "Back to blogs" }),
-      S ? /* @__PURE__ */ e("div", { className: "gbcms-state", children: "Loading blog..." }) : b ? /* @__PURE__ */ n(x, { children: [
-        b.featuredImage && /* @__PURE__ */ e("img", { className: "gbcms-detail-image", src: u.imageUrl(b.featuredImage), alt: b.title }),
-        /* @__PURE__ */ n("div", { className: "gbcms-meta", children: [
-          /* @__PURE__ */ e("span", { children: b.category }),
-          /* @__PURE__ */ e("span", { children: O(b.createdAt) }),
-          /* @__PURE__ */ n("span", { children: [
-            "By ",
-            b.authorName
+    l.name === "detail" && /* @__PURE__ */ r("article", { className: "gbcms-detail", children: [
+      /* @__PURE__ */ e("button", { className: "gbcms-read-link", type: "button", onClick: () => h({ name: "list", page: 1 }), children: "Back to blogs" }),
+      v ? /* @__PURE__ */ e("div", { className: "gbcms-state", children: "Loading blog..." }) : p ? /* @__PURE__ */ r(W, { children: [
+        /* @__PURE__ */ r("div", { className: "gbcms-detail-hero", children: [
+          /* @__PURE__ */ e(
+            z,
+            {
+              src: d.imageUrl(p.featuredImage),
+              alt: p.title,
+              fallback: p.category.slice(0, 2).toUpperCase(),
+              className: "gbcms-detail-image",
+              placeholderClassName: "gbcms-detail-placeholder"
+            }
+          ),
+          /* @__PURE__ */ r("div", { className: "gbcms-detail-heading", children: [
+            /* @__PURE__ */ r("div", { className: "gbcms-meta", children: [
+              /* @__PURE__ */ e("span", { children: p.category }),
+              /* @__PURE__ */ e("span", { children: R(p.createdAt) }),
+              /* @__PURE__ */ r("span", { children: [
+                "By ",
+                p.authorName
+              ] })
+            ] }),
+            /* @__PURE__ */ e("h1", { children: p.title })
           ] })
         ] }),
-        /* @__PURE__ */ e("h1", { children: b.title }),
-        /* @__PURE__ */ e("div", { className: "gbcms-tags", children: b.tags.map((l) => /* @__PURE__ */ e("span", { children: l }, l)) }),
-        /* @__PURE__ */ e("div", { className: "gbcms-content", children: b.content })
+        /* @__PURE__ */ e("div", { className: "gbcms-tags", children: p.tags.map((n) => /* @__PURE__ */ e("span", { children: n }, n)) }),
+        /* @__PURE__ */ e("div", { className: "gbcms-content", children: p.content })
       ] }) : /* @__PURE__ */ e("div", { className: "gbcms-state", children: "Blog not found." })
-    ] }),
-    r.name === "write" && t && /* @__PURE__ */ n("form", { className: "gbcms-form", onSubmit: G, children: [
-      /* @__PURE__ */ n("div", { className: "gbcms-form-heading", children: [
-        /* @__PURE__ */ e("button", { className: "gbcms-link-button", type: "button", onClick: () => m({ name: "list", page: 1 }), children: "Back to blogs" }),
-        /* @__PURE__ */ e("h2", { children: "Write a Blog" }),
-        /* @__PURE__ */ e("p", { children: "Submitted blogs are sent to the website admin for approval before publishing." })
-      ] }),
-      /* @__PURE__ */ n("label", { children: [
-        "Title",
-        /* @__PURE__ */ e("input", { name: "title", required: !0, maxLength: 160 })
-      ] }),
-      /* @__PURE__ */ n("div", { className: "gbcms-form-row", children: [
-        /* @__PURE__ */ n("label", { children: [
-          "Author name",
-          /* @__PURE__ */ e("input", { name: "authorName", required: !0, maxLength: 100 })
-        ] }),
-        /* @__PURE__ */ n("label", { children: [
-          "Author email",
-          /* @__PURE__ */ e("input", { name: "authorEmail", required: !0, type: "email", maxLength: 160 })
-        ] })
-      ] }),
-      /* @__PURE__ */ n("label", { children: [
-        "Category",
-        /* @__PURE__ */ e("input", { name: "category", required: !0, maxLength: 80 })
-      ] }),
-      /* @__PURE__ */ n("label", { children: [
-        "Tags",
-        /* @__PURE__ */ e("input", { name: "tags", placeholder: "SEO, Web Design, Marketing" })
-      ] }),
-      /* @__PURE__ */ n("label", { children: [
-        "Featured image",
-        /* @__PURE__ */ e("input", { name: "featuredImage", type: "file", accept: "image/jpeg,image/jpg,image/png,image/webp" })
-      ] }),
-      /* @__PURE__ */ n("label", { children: [
-        "Content",
-        /* @__PURE__ */ e("textarea", { name: "content", required: !0, rows: 10, minLength: 50 })
-      ] }),
-      /* @__PURE__ */ e("button", { className: "gbcms-button gbcms-button-primary", type: "submit", disabled: S, children: S ? "Submitting..." : "Submit for Approval" })
     ] })
   ] });
 }
 export {
-  I as BlogApiError,
-  re as GlobalBlogCMS,
-  Z as createBlogApi,
-  _ as normalizeApiUrl
+  C as BlogApiError,
+  ie as GlobalBlogCMS,
+  te as createBlogApi,
+  K as normalizeApiUrl
 };

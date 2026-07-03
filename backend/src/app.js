@@ -20,6 +20,9 @@ import websiteRoutes from './routes/websiteRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const backendRoot = path.resolve(__dirname, '../..');
+const uploadPublicRoot = path.resolve(backendRoot, env.uploadDir.split(/[\\/]/)[0] || 'uploads');
+const uploadStorageRoot = path.resolve(backendRoot, env.uploadDir);
 
 const app = express();
 const configuredOrigins = env.corsOrigin
@@ -69,7 +72,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'));
 app.use(apiLimiter);
 
-app.use('/uploads', express.static(path.resolve(__dirname, '../..', env.uploadDir)));
+app.use('/uploads', express.static(uploadPublicRoot));
+app.use('/uploads', express.static(uploadStorageRoot));
 
 app.use('/', healthRoutes);
 app.use('/api', healthRoutes);

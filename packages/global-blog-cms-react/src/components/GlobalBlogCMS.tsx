@@ -17,8 +17,7 @@ export interface GlobalBlogCMSProps {
 
 type View =
   | { name: 'list'; page: number }
-  | { name: 'detail'; slug: string }
-  | { name: 'write' };
+  | { name: 'detail'; slug: string };
 
 const formatDate = (date: string) =>
   new Intl.DateTimeFormat(undefined, {
@@ -34,6 +33,28 @@ const splitTags = (value: string) =>
     .split(',')
     .map((tag) => tag.trim())
     .filter(Boolean);
+
+function BlogImage({
+  src,
+  alt,
+  fallback,
+  className,
+  placeholderClassName
+}: {
+  src: string;
+  alt: string;
+  fallback: string;
+  className: string;
+  placeholderClassName: string;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return <span className={placeholderClassName}>{fallback}</span>;
+  }
+
+  return <img className={className} src={src} alt={alt} loading="lazy" onError={() => setFailed(true)} />;
+}
 
 export function GlobalBlogCMS({
   apiUrl,
@@ -55,6 +76,7 @@ export function GlobalBlogCMS({
   const [search, setSearch] = useState('');
   const [activeSearch, setActiveSearch] = useState('');
   const [loading, setLoading] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
   const [error, setError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState('');
 
@@ -133,6 +155,7 @@ export function GlobalBlogCMS({
       await api.submitBlog(payload);
       form.reset();
       setSubmitSuccess('Your blog has been submitted for approval.');
+      setFormOpen(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to submit blog.');
     } finally {
@@ -144,17 +167,11 @@ export function GlobalBlogCMS({
     <section className={`gbcms-widget gbcms-theme-${theme} ${className}`.trim()}>
       <header className="gbcms-header">
         {renderHeader || (
-          <>
-            <div>
-              <h1>{title}</h1>
-              <p>{description}</p>
-            </div>
-            {showSubmitForm && (
-              <button className="gbcms-button gbcms-button-primary" type="button" onClick={() => setView({ name: 'write' })}>
-                Write Blog
-              </button>
-            )}
-          </>
+          <div>
+            <span className="gbcms-eyebrow">Client Blog</span>
+            <h1>{title}</h1>
+            <p>{description}</p>
+          </div>
         )}
       </header>
 
@@ -196,9 +213,15 @@ export function GlobalBlogCMS({
             <div className="gbcms-grid">
               {blogs.map((blog) => (
                 <article className="gbcms-card" key={blog._id}>
-                  {blog.featuredImage && (
-                    <img className="gbcms-card-image" src={api.imageUrl(blog.featuredImage)} alt={blog.title} loading="lazy" />
-                  )}
+                  <button className="gbcms-card-media" type="button" onClick={() => setView({ name: 'detail', slug: blog.slug })}>
+                    <BlogImage
+                      src={api.imageUrl(blog.featuredImage)}
+                      alt={blog.title}
+                      fallback={blog.category.slice(0, 2).toUpperCase()}
+                      className="gbcms-card-image"
+                      placeholderClassName="gbcms-card-placeholder"
+                    />
+                  </button>
                   <div className="gbcms-card-body">
                     <div className="gbcms-meta">
                       <span>{blog.category}</span>
@@ -206,8 +229,8 @@ export function GlobalBlogCMS({
                     </div>
                     <h2>{blog.title}</h2>
                     <p>{excerpt(blog.content)}</p>
-                    <button className="gbcms-link-button" type="button" onClick={() => setView({ name: 'detail', slug: blog.slug })}>
-                      Read more
+                    <button className="gbcms-read-link" type="button" onClick={() => setView({ name: 'detail', slug: blog.slug })}>
+                      Read article
                     </button>
                   </div>
                 </article>
@@ -238,12 +261,76 @@ export function GlobalBlogCMS({
               </button>
             </nav>
           )}
+
+          {showSubmitForm && (
+            <section className="gbcms-submit-panel">
+              <div className="gbcms-submit-intro">
+                <span className="gbcms-eyebrow">Write for us</span>
+                <h2>Submit your blog for review</h2>
+                <p>Share an article with this website. It will appear publicly after the site admin approves it.</p>
+              </div>
+              <button
+                className="gbcms-button gbcms-button-primary"
+                type="button"
+                onClick={() => {
+                  setFormOpen((value) => !value);
+                  setSubmitSuccess('');
+                }}
+                aria-expanded={formOpen}
+              >
+                {formOpen ? 'Close Form' : 'Write Blog'}
+              </button>
+
+              {formOpen && (
+                <form className="gbcms-form" onSubmit={submitBlog}>
+                  <div className="gbcms-form-heading">
+                    <h3>Blog Details</h3>
+                    <p>Add a featured image so your article card and detail page look complete.</p>
+                  </div>
+
+                  <label>
+                    Title
+                    <input name="title" required maxLength={160} placeholder="Enter blog title" />
+                  </label>
+                  <div className="gbcms-form-row">
+                    <label>
+                      Author name
+                      <input name="authorName" required maxLength={100} placeholder="Your name" />
+                    </label>
+                    <label>
+                      Author email
+                      <input name="authorEmail" required type="email" maxLength={160} placeholder="you@example.com" />
+                    </label>
+                  </div>
+                  <label>
+                    Category
+                    <input name="category" required maxLength={80} placeholder="Category" />
+                  </label>
+                  <label>
+                    Tags
+                    <input name="tags" placeholder="SEO, Web Design, Marketing" />
+                  </label>
+                  <label>
+                    Featured image
+                    <input name="featuredImage" type="file" accept="image/jpeg,image/jpg,image/png,image/webp" />
+                  </label>
+                  <label>
+                    Content
+                    <textarea name="content" required rows={10} minLength={50} placeholder="Write your blog content here..." />
+                  </label>
+                  <button className="gbcms-button gbcms-button-primary" type="submit" disabled={loading}>
+                    {loading ? 'Submitting...' : 'Submit for Approval'}
+                  </button>
+                </form>
+              )}
+            </section>
+          )}
         </>
       )}
 
       {view.name === 'detail' && (
         <article className="gbcms-detail">
-          <button className="gbcms-link-button" type="button" onClick={() => setView({ name: 'list', page: 1 })}>
+          <button className="gbcms-read-link" type="button" onClick={() => setView({ name: 'list', page: 1 })}>
             Back to blogs
           </button>
 
@@ -251,15 +338,23 @@ export function GlobalBlogCMS({
             <div className="gbcms-state">Loading blog...</div>
           ) : selectedBlog ? (
             <>
-              {selectedBlog.featuredImage && (
-                <img className="gbcms-detail-image" src={api.imageUrl(selectedBlog.featuredImage)} alt={selectedBlog.title} />
-              )}
-              <div className="gbcms-meta">
-                <span>{selectedBlog.category}</span>
-                <span>{formatDate(selectedBlog.createdAt)}</span>
-                <span>By {selectedBlog.authorName}</span>
+              <div className="gbcms-detail-hero">
+                <BlogImage
+                  src={api.imageUrl(selectedBlog.featuredImage)}
+                  alt={selectedBlog.title}
+                  fallback={selectedBlog.category.slice(0, 2).toUpperCase()}
+                  className="gbcms-detail-image"
+                  placeholderClassName="gbcms-detail-placeholder"
+                />
+                <div className="gbcms-detail-heading">
+                  <div className="gbcms-meta">
+                    <span>{selectedBlog.category}</span>
+                    <span>{formatDate(selectedBlog.createdAt)}</span>
+                    <span>By {selectedBlog.authorName}</span>
+                  </div>
+                  <h1>{selectedBlog.title}</h1>
+                </div>
               </div>
-              <h1>{selectedBlog.title}</h1>
               <div className="gbcms-tags">
                 {selectedBlog.tags.map((tag) => (
                   <span key={tag}>{tag}</span>
@@ -271,52 +366,6 @@ export function GlobalBlogCMS({
             <div className="gbcms-state">Blog not found.</div>
           )}
         </article>
-      )}
-
-      {view.name === 'write' && showSubmitForm && (
-        <form className="gbcms-form" onSubmit={submitBlog}>
-          <div className="gbcms-form-heading">
-            <button className="gbcms-link-button" type="button" onClick={() => setView({ name: 'list', page: 1 })}>
-              Back to blogs
-            </button>
-            <h2>Write a Blog</h2>
-            <p>Submitted blogs are sent to the website admin for approval before publishing.</p>
-          </div>
-
-          <label>
-            Title
-            <input name="title" required maxLength={160} />
-          </label>
-          <div className="gbcms-form-row">
-            <label>
-              Author name
-              <input name="authorName" required maxLength={100} />
-            </label>
-            <label>
-              Author email
-              <input name="authorEmail" required type="email" maxLength={160} />
-            </label>
-          </div>
-          <label>
-            Category
-            <input name="category" required maxLength={80} />
-          </label>
-          <label>
-            Tags
-            <input name="tags" placeholder="SEO, Web Design, Marketing" />
-          </label>
-          <label>
-            Featured image
-            <input name="featuredImage" type="file" accept="image/jpeg,image/jpg,image/png,image/webp" />
-          </label>
-          <label>
-            Content
-            <textarea name="content" required rows={10} minLength={50} />
-          </label>
-          <button className="gbcms-button gbcms-button-primary" type="submit" disabled={loading}>
-            {loading ? 'Submitting...' : 'Submit for Approval'}
-          </button>
-        </form>
       )}
     </section>
   );

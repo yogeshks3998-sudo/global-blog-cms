@@ -1,18 +1,18 @@
-# Global Blog CMS React
+# Adversity Global Blog CMS React
 
-Reusable React UI package for client websites using Global Blog CMS.
+Reusable React UI package for client websites using Adversity Global Blog CMS.
 
 ## Install
 
 ```bash
-npm install @global-blog-cms/react
+npm install adversity-global-blog-cms-react
 ```
 
 ## Usage
 
 ```tsx
-import { GlobalBlogCMS } from '@global-blog-cms/react';
-import '@global-blog-cms/react/styles.css';
+import { GlobalBlogCMS } from 'adversity-global-blog-cms-react';
+import 'adversity-global-blog-cms-react/styles.css';
 
 export default function BlogPage() {
   return (
@@ -52,6 +52,31 @@ export default function BlogPage() {
 - API key header handling
 
 The package only calls public CMS endpoints. It never uses admin JWTs.
+
+## Theme Colors
+
+The package inherits the client website font, text color, and common brand variables automatically. It reads these variables when they exist:
+
+```css
+--accent-color
+--primary-color
+--theme-primary
+--color-primary
+```
+
+Client websites can tune the package with CMS-specific CSS variables on any parent element only when needed:
+
+```css
+.blog-page {
+  --gbcms-client-primary: #0f766e;
+  --gbcms-client-primary-contrast: #ffffff;
+  --gbcms-client-surface: #ffffff;
+  --gbcms-client-soft: #f3f7f6;
+  --gbcms-client-text: #10201d;
+  --gbcms-client-muted: #60716d;
+  --gbcms-client-border: #d9e5e2;
+}
+```
 
 ## Local Preview
 
