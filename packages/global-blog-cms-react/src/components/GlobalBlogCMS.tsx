@@ -165,21 +165,22 @@ export function GlobalBlogCMS({
 
   return (
     <section className={`gbcms-widget gbcms-theme-${theme} ${className}`.trim()}>
-      <header className="gbcms-header">
-        {renderHeader || (
-          <div>
-            <span className="gbcms-eyebrow">Client Blog</span>
-            <h1>{title}</h1>
-            <p>{description}</p>
-          </div>
-        )}
-      </header>
+      <div className="gbcms-shell">
+        <header className="gbcms-header">
+          {renderHeader || (
+            <div>
+              <span className="gbcms-eyebrow">Client Blog</span>
+              <h1>{title}</h1>
+              <p>{description}</p>
+            </div>
+          )}
+        </header>
 
-      {error && <div className="gbcms-alert gbcms-alert-error">{error}</div>}
-      {submitSuccess && <div className="gbcms-alert gbcms-alert-success">{submitSuccess}</div>}
+        {error && <div className="gbcms-alert gbcms-alert-error">{error}</div>}
+        {submitSuccess && <div className="gbcms-alert gbcms-alert-success">{submitSuccess}</div>}
 
-      {view.name === 'list' && (
-        <>
+        {view.name === 'list' && (
+          <>
           <form className="gbcms-toolbar" onSubmit={submitSearch}>
             <input
               value={search}
@@ -325,11 +326,11 @@ export function GlobalBlogCMS({
               )}
             </section>
           )}
-        </>
-      )}
+          </>
+        )}
 
-      {view.name === 'detail' && (
-        <article className="gbcms-detail">
+        {view.name === 'detail' && (
+          <article className="gbcms-detail">
           <button className="gbcms-read-link" type="button" onClick={() => setView({ name: 'list', page: 1 })}>
             Back to blogs
           </button>
@@ -365,8 +366,9 @@ export function GlobalBlogCMS({
           ) : (
             <div className="gbcms-state">Blog not found.</div>
           )}
-        </article>
-      )}
+          </article>
+        )}
+      </div>
     </section>
   );
 }

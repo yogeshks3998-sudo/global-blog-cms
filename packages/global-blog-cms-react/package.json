@@ -1,6 +1,6 @@
 {
   "name": "adversity-global-blog-cms-react",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Reusable Adversity Global Blog CMS React UI for client websites.",
   "type": "module",
   "main": "dist/index.umd.cjs",

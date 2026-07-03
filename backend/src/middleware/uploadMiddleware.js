@@ -2,10 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
 import sharp from 'sharp';
+import { fileURLToPath } from 'url';
 import { env } from '../config/env.js';
 
 const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-const uploadRoot = path.resolve(env.uploadDir);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const backendRoot = path.resolve(__dirname, '../..');
+const uploadRoot = path.resolve(backendRoot, env.uploadDir);
 
 fs.mkdirSync(uploadRoot, { recursive: true });
 

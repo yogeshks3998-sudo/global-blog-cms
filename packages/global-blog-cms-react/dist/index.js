@@ -1,7 +1,7 @@
 var V = Object.defineProperty;
 var _ = (a, s, m) => s in a ? V(a, s, { enumerable: !0, configurable: !0, writable: !0, value: m }) : a[s] = m;
 var A = (a, s, m) => _(a, typeof s != "symbol" ? s + "" : s, m);
-import { jsxs as r, jsx as e, Fragment as W } from "react/jsx-runtime";
+import { jsx as e, jsxs as r, Fragment as W } from "react/jsx-runtime";
 import { useMemo as X, useState as u, useEffect as Z } from "react";
 class C extends Error {
   constructor(m, g, b) {
@@ -21,45 +21,45 @@ const K = (a) => {
   const m = s.toString();
   return m ? `?${m}` : "";
 }, te = (a, s) => {
-  const m = K(a), g = async (t, c = {}) => {
+  const m = K(a), g = async (t, o = {}) => {
     var d;
     if (!s)
       throw new C("Missing Global Blog CMS API key.", 401);
-    const i = new Headers(c.headers);
-    i.set("x-api-key", s), !(c.body instanceof FormData) && !i.has("Content-Type") && i.set("Content-Type", "application/json");
+    const i = new Headers(o.headers);
+    i.set("x-api-key", s), !(o.body instanceof FormData) && !i.has("Content-Type") && i.set("Content-Type", "application/json");
     let y;
     try {
       y = await fetch(`${m}${t}`, {
-        ...c,
+        ...o,
         headers: i
       });
     } catch (l) {
       throw new C(l instanceof Error ? l.message : "CMS API request failed.", 0);
     }
-    const o = await y.json().catch(() => null);
-    if (!y.ok || !(o != null && o.success)) {
-      const l = (d = o == null ? void 0 : o.errors) == null ? void 0 : d.map((h) => h.message).join(", ");
+    const c = await y.json().catch(() => null);
+    if (!y.ok || !(c != null && c.success)) {
+      const l = (d = c == null ? void 0 : c.errors) == null ? void 0 : d.map((h) => h.message).join(", ");
       throw new C(
-        l || (o == null ? void 0 : o.message) || "CMS API request failed.",
+        l || (c == null ? void 0 : c.message) || "CMS API request failed.",
         y.status,
-        o == null ? void 0 : o.errors
+        c == null ? void 0 : c.errors
       );
     }
-    return o;
+    return c;
   };
   return {
     imageUrl: (t) => {
       if (!t) return "";
       if (/^https?:\/\//i.test(t)) return t;
-      const c = t.replace(/\\/g, "/").replace(/^\/+/, "");
-      return `${m.replace(/\/api$/, "")}/${c}`;
+      const o = t.replace(/\\/g, "/").replace(/^\/+/, "");
+      return `${m.replace(/\/api$/, "")}/${o}`;
     },
     async getBlogs(t = {}) {
       var i;
-      const c = await g(`/blogs${ee(t)}`);
+      const o = await g(`/blogs${ee(t)}`);
       return {
-        blogs: ((i = c.data) == null ? void 0 : i.blogs) || [],
-        meta: c.meta
+        blogs: ((i = o.data) == null ? void 0 : i.blogs) || [],
+        meta: o.meta
       };
     },
     async getLatestBlogs(t = 5) {
@@ -68,13 +68,13 @@ const K = (a) => {
     },
     async getBlog(t) {
       var i;
-      const c = await g(`/blogs/${encodeURIComponent(t)}`);
-      if (!((i = c.data) != null && i.blog))
+      const o = await g(`/blogs/${encodeURIComponent(t)}`);
+      if (!((i = o.data) != null && i.blog))
         throw new C("Blog not found.", 404);
-      return c.data.blog;
+      return o.data.blog;
     },
     async submitBlog(t) {
-      var y, o, d;
+      var y, c, d;
       if (!!t.featuredImage) {
         const l = new FormData();
         l.set("title", t.title), l.set("authorName", t.authorName), l.set("authorEmail", t.authorEmail), l.set("category", t.category), l.set("content", t.content), (y = t.tags) != null && y.length && l.set("tags", t.tags.join(",")), t.featuredImage && l.set("featuredImage", t.featuredImage);
@@ -82,7 +82,7 @@ const K = (a) => {
           method: "POST",
           body: l
         });
-        if (!((o = h.data) != null && o.blog)) throw new C("Blog submission response is missing data.", 500);
+        if (!((c = h.data) != null && c.blog)) throw new C("Blog submission response is missing data.", 500);
         return h.data.blog;
       }
       const i = await g("/blogs/submit", {
@@ -112,8 +112,8 @@ function z({
   className: g,
   placeholderClassName: b
 }) {
-  const [t, c] = u(!1);
-  return !a || t ? /* @__PURE__ */ e("span", { className: b, children: m }) : /* @__PURE__ */ e("img", { className: g, src: a, alt: s, loading: "lazy", onError: () => c(!0) });
+  const [t, o] = u(!1);
+  return !a || t ? /* @__PURE__ */ e("span", { className: b, children: m }) : /* @__PURE__ */ e("img", { className: g, src: a, alt: s, loading: "lazy", onError: () => o(!0) });
 }
 function ie({
   apiUrl: a,
@@ -122,10 +122,10 @@ function ie({
   theme: g = "light",
   pageSize: b = 9,
   showSubmitForm: t = !0,
-  title: c = "Blogs",
+  title: o = "Blogs",
   description: i = "Read the latest published articles or submit your own story for review.",
   emptyMessage: y = "No published blogs are available yet.",
-  renderHeader: o
+  renderHeader: c
 }) {
   const d = X(() => te(a, s), [a, s]), [l, h] = u({ name: "list", page: 1 }), [$, P] = u([]), [p, U] = u(null), [E, D] = u(1), [F, L] = u(""), [I, M] = u(""), [v, S] = u(!1), [k, T] = u(!1), [q, B] = u(""), [j, x] = u(""), G = async (n, w) => {
     var f;
@@ -176,10 +176,10 @@ function ie({
       S(!1);
     }
   };
-  return /* @__PURE__ */ r("section", { className: `gbcms-widget gbcms-theme-${g} ${m}`.trim(), children: [
-    /* @__PURE__ */ e("header", { className: "gbcms-header", children: o || /* @__PURE__ */ r("div", { children: [
+  return /* @__PURE__ */ e("section", { className: `gbcms-widget gbcms-theme-${g} ${m}`.trim(), children: /* @__PURE__ */ r("div", { className: "gbcms-shell", children: [
+    /* @__PURE__ */ e("header", { className: "gbcms-header", children: c || /* @__PURE__ */ r("div", { children: [
       /* @__PURE__ */ e("span", { className: "gbcms-eyebrow", children: "Client Blog" }),
-      /* @__PURE__ */ e("h1", { children: c }),
+      /* @__PURE__ */ e("h1", { children: o }),
       /* @__PURE__ */ e("p", { children: i })
     ] }) }),
     q && /* @__PURE__ */ e("div", { className: "gbcms-alert gbcms-alert-error", children: q }),
@@ -344,7 +344,7 @@ function ie({
         /* @__PURE__ */ e("div", { className: "gbcms-content", children: p.content })
       ] }) : /* @__PURE__ */ e("div", { className: "gbcms-state", children: "Blog not found." })
     ] })
-  ] });
+  ] }) });
 }
 export {
   C as BlogApiError,
