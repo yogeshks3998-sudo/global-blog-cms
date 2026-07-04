@@ -1,4 +1,5 @@
-import { ArrowLeft, Calendar, Tag, Pencil, CheckCircle2, Trash2, User } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, Calendar, Tag, Pencil, CheckCircle2, Trash2, User, ImageIcon } from 'lucide-react';
 import type { Blog, Screen } from '../mockData';
 import { StatusBadge } from './StatusBadge';
 
@@ -41,6 +42,8 @@ function ContentRenderer({ content }: { content: string }) {
 }
 
 export function ViewBlog({ blog, onNavigate, onApprove, onDelete, canApprove }: ViewBlogProps) {
+  const [imageFailed, setImageFailed] = useState(false);
+
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Top actions bar */}
@@ -88,11 +91,19 @@ export function ViewBlog({ blog, onNavigate, onApprove, onDelete, canApprove }: 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {/* Hero image */}
         <div className="relative h-56 sm:h-72 md:h-80 bg-slate-100 overflow-hidden">
-          <img
-            src={blog.image}
-            alt={blog.title}
-            className="w-full h-full object-cover"
-          />
+          {blog.image && !imageFailed ? (
+            <img
+              src={blog.image}
+              alt={blog.title}
+              className="w-full h-full object-cover"
+              onError={() => setImageFailed(true)}
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400">
+              <ImageIcon size={42} />
+              <p className="mt-2" style={{ fontSize: '13px', fontWeight: 500 }}>No featured image</p>
+            </div>
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
           <div className="absolute bottom-4 left-6">
             <StatusBadge status={blog.status} />

@@ -17,9 +17,12 @@ export function EditBlog({ blog, onNavigate, onSave, onApprove, onDelete, canApp
   const [form, setForm] = useState({ ...blog });
   const [tagInput, setTagInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
 
-  const update = (field: keyof Blog, value: string | string[]) =>
+  const update = (field: keyof Blog, value: string | string[]) => {
+    if (field === 'image') setImageFailed(false);
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
 
   const addTag = () => {
     const t = tagInput.trim().toLowerCase();
@@ -106,8 +109,8 @@ export function EditBlog({ blog, onNavigate, onSave, onApprove, onDelete, canApp
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {/* Image section */}
         <div className="relative h-48 bg-slate-100 group overflow-hidden">
-          {form.image ? (
-            <img src={form.image} alt="Featured" className="w-full h-full object-cover" />
+          {form.image && !imageFailed ? (
+            <img src={form.image} alt="Featured" className="w-full h-full object-cover" onError={() => setImageFailed(true)} />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
               <ImageIcon size={36} />

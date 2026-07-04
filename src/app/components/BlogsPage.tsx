@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, Eye, Pencil, Trash2, CheckCircle, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
+import { Search, Filter, Eye, Pencil, Trash2, CheckCircle, ChevronLeft, ChevronRight, FileText, ImageIcon } from 'lucide-react';
 import type { Blog, BlogStatus, Screen } from '../mockData';
 import { StatusBadge } from './StatusBadge';
 
@@ -68,6 +68,27 @@ function TableSkeleton() {
         </tr>
       ))}
     </>
+  );
+}
+
+function BlogThumb({ blog }: { blog: Blog }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  if (!blog.image || imageFailed) {
+    return (
+      <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-slate-100 text-slate-400">
+        <ImageIcon size={16} />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={blog.image}
+      alt={blog.title}
+      className="w-10 h-10 rounded-lg object-cover flex-shrink-0 bg-slate-100"
+      onError={() => setImageFailed(true)}
+    />
   );
 }
 
@@ -191,11 +212,7 @@ export function BlogsPage({ blogs, onNavigate, onApprove, onDelete, searchQuery,
                     {/* Blog info */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <img
-                          src={blog.image}
-                          alt={blog.title}
-                          className="w-10 h-10 rounded-lg object-cover flex-shrink-0 bg-slate-100"
-                        />
+                        <BlogThumb blog={blog} />
                         <div className="min-w-0">
                           <p
                             className="text-slate-800 truncate max-w-xs cursor-pointer hover:text-blue-600 transition-colors"
