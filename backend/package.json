@@ -8,7 +8,8 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "hash-password": "node src/utils/hashPassword.js",
-    "seed:super-admin": "node src/utils/seedSuperAdmin.js"
+    "seed:super-admin": "node src/utils/seedSuperAdmin.js",
+    "migrate:upload-images": "node src/scripts/migrateUploadImagesToDatabase.js"
   },
   "keywords": [
     "express",

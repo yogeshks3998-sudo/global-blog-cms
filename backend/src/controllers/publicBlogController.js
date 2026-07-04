@@ -11,7 +11,7 @@ export const submitBlog = asyncHandler(async (req, res) => {
     websiteId: req.website._id,
     tags: normalizeTags(req.body.tags),
     status: BLOG_STATUS.PENDING,
-    featuredImage: req.file?.path || null
+    featuredImage: req.file?.path || req.body.featuredImage || req.body.image || null
   });
 
   return successResponse(res, {

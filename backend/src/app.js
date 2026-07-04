@@ -20,7 +20,7 @@ import websiteRoutes from './routes/websiteRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const backendRoot = path.resolve(__dirname, '../..');
+const backendRoot = path.resolve(__dirname, '..');
 const uploadPublicRoot = path.resolve(backendRoot, env.uploadDir.split(/[\\/]/)[0] || 'uploads');
 const uploadStorageRoot = path.resolve(backendRoot, env.uploadDir);
 
@@ -74,6 +74,12 @@ app.use(apiLimiter);
 
 app.use('/uploads', express.static(uploadPublicRoot));
 app.use('/uploads', express.static(uploadStorageRoot));
+app.use('/uploads', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Uploaded file not found'
+  });
+});
 
 app.use('/', healthRoutes);
 app.use('/api', healthRoutes);

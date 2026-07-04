@@ -12,7 +12,10 @@ const backendRoot = path.resolve(__dirname, '../..');
 const uploadRoot = path.resolve(backendRoot, env.uploadDir);
 
 fs.mkdirSync(uploadRoot, { recursive: true });
-const imageStorage = process.env.IMAGE_STORAGE || 'database';
+const useFilesystemStorage =
+  process.env.IMAGE_STORAGE === 'filesystem' &&
+  env.nodeEnv !== 'production' &&
+  process.env.RENDER !== 'true';
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -30,7 +33,28 @@ const upload = multer({
   }
 });
 
-export const uploadBlogImage = upload.single('featuredImage');
+const blogImageUpload = upload.fields([
+  { name: 'featuredImage', maxCount: 1 },
+  { name: 'image', maxCount: 1 },
+  { name: 'file', maxCount: 1 },
+  { name: 'featured_image', maxCount: 1 }
+]);
+
+export const uploadBlogImage = (req, res, next) => {
+  blogImageUpload(req, res, (error) => {
+    if (error) return next(error);
+
+    const files = req.files || {};
+    req.file =
+      files.featuredImage?.[0] ||
+      files.image?.[0] ||
+      files.file?.[0] ||
+      files.featured_image?.[0] ||
+      null;
+
+    return next();
+  });
+};
 
 export const processBlogImage = async (req, res, next) => {
   if (!req.file) return next();
@@ -43,7 +67,7 @@ export const processBlogImage = async (req, res, next) => {
       .webp({ quality: 78 })
       .toBuffer();
 
-    if (imageStorage === 'filesystem') {
+    if (useFilesystemStorage) {
       const outputPath = path.join(uploadRoot, filename);
       await fs.promises.writeFile(outputPath, processedImage);
       req.file.path = path.join(env.uploadDir, filename).replace(/\\/g, '/');
