@@ -12,6 +12,7 @@ const backendRoot = path.resolve(__dirname, '../..');
 const uploadRoot = path.resolve(backendRoot, env.uploadDir);
 
 fs.mkdirSync(uploadRoot, { recursive: true });
+const imageStorage = process.env.IMAGE_STORAGE || 'database';
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -36,15 +37,21 @@ export const processBlogImage = async (req, res, next) => {
 
   try {
     const filename = `blog-${Date.now()}-${Math.round(Math.random() * 1e9)}.webp`;
-    const outputPath = path.join(uploadRoot, filename);
-
-    await sharp(req.file.buffer)
+    const processedImage = await sharp(req.file.buffer)
       .rotate()
-      .resize({ width: 1600, withoutEnlargement: true })
-      .webp({ quality: 82 })
-      .toFile(outputPath);
+      .resize({ width: 1400, height: 788, fit: 'cover', position: 'center' })
+      .webp({ quality: 78 })
+      .toBuffer();
 
-    req.file.path = path.join(env.uploadDir, filename).replace(/\\/g, '/');
+    if (imageStorage === 'filesystem') {
+      const outputPath = path.join(uploadRoot, filename);
+      await fs.promises.writeFile(outputPath, processedImage);
+      req.file.path = path.join(env.uploadDir, filename).replace(/\\/g, '/');
+      req.file.filename = filename;
+      return next();
+    }
+
+    req.file.path = `data:image/webp;base64,${processedImage.toString('base64')}`;
     req.file.filename = filename;
     next();
   } catch (error) {

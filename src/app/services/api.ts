@@ -148,6 +148,7 @@ const fromStatus = (status: BlogStatus): BackendBlog['status'] =>
 
 const getImageUrl = (path?: string | null) => {
   if (!path) return '';
+  if (/^data:image\//i.test(path)) return path;
   if (/^https?:\/\//i.test(path)) return path;
   return `${UPLOAD_BASE_URL}/${path.replace(/^\/+/, '')}`;
 };

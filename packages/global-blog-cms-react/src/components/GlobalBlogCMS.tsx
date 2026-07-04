@@ -73,22 +73,20 @@ export function GlobalBlogCMS({
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
   const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState('');
-  const [activeSearch, setActiveSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState('');
   const [error, setError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState('');
 
-  const loadBlogs = async (page: number, currentSearch: string) => {
+  const loadBlogs = async (page: number) => {
     setLoading(true);
     setError('');
 
     try {
       const result = await api.getBlogs({
         page,
-        limit: pageSize,
-        search: currentSearch
+        limit: pageSize
       });
       setBlogs(result.blogs);
       setTotalPages(result.meta?.totalPages || 1);
@@ -117,18 +115,23 @@ export function GlobalBlogCMS({
 
   useEffect(() => {
     if (view.name === 'list') {
-      loadBlogs(view.page, activeSearch);
+      loadBlogs(view.page);
     }
 
     if (view.name === 'detail') {
       loadBlog(view.slug);
     }
-  }, [view, activeSearch, pageSize, api]);
+  }, [view, pageSize, api]);
 
-  const submitSearch = (event: FormEvent) => {
-    event.preventDefault();
-    setActiveSearch(search);
-    setView({ name: 'list', page: 1 });
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
+
+  const setPreviewFile = (file?: File | null) => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImagePreview(file ? URL.createObjectURL(file) : '');
   };
 
   const submitBlog = async (event: FormEvent<HTMLFormElement>) => {
@@ -154,6 +157,7 @@ export function GlobalBlogCMS({
     try {
       await api.submitBlog(payload);
       form.reset();
+      setPreviewFile(null);
       setSubmitSuccess('Your blog has been submitted for approval.');
       setFormOpen(false);
     } catch (err) {
@@ -167,45 +171,19 @@ export function GlobalBlogCMS({
     <section className={`gbcms-widget gbcms-theme-${theme} ${className}`.trim()}>
       <div className="gbcms-shell">
         <header className="gbcms-header">
-          {renderHeader || (
-            <div>
-              <span className="gbcms-eyebrow">Client Blog</span>
-              <h1>{title}</h1>
-              <p>{description}</p>
-            </div>
+        {renderHeader || (
+          <div>
+            <h1>{title}</h1>
+            <p>{description}</p>
+          </div>
           )}
         </header>
 
         {error && <div className="gbcms-alert gbcms-alert-error">{error}</div>}
         {submitSuccess && <div className="gbcms-alert gbcms-alert-success">{submitSuccess}</div>}
 
-        {view.name === 'list' && (
-          <>
-          <form className="gbcms-toolbar" onSubmit={submitSearch}>
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search blogs"
-              aria-label="Search blogs"
-            />
-            <button className="gbcms-button" type="submit">
-              Search
-            </button>
-            {activeSearch && (
-              <button
-                className="gbcms-button gbcms-button-muted"
-                type="button"
-                onClick={() => {
-                  setSearch('');
-                  setActiveSearch('');
-                  setView({ name: 'list', page: 1 });
-                }}
-              >
-                Clear
-              </button>
-            )}
-          </form>
-
+      {view.name === 'list' && (
+        <>
           {loading ? (
             <div className="gbcms-state">Loading blogs...</div>
           ) : blogs.length === 0 ? (
@@ -266,9 +244,9 @@ export function GlobalBlogCMS({
           {showSubmitForm && (
             <section className="gbcms-submit-panel">
               <div className="gbcms-submit-intro">
-                <span className="gbcms-eyebrow">Write for us</span>
-                <h2>Submit your blog for review</h2>
-                <p>Share an article with this website. It will appear publicly after the site admin approves it.</p>
+                <span className="gbcms-eyebrow">Start Writing</span>
+                <h2>Create Content That Makes an Impact</h2>
+                <p>Help readers learn, solve problems, and stay informed with well-written, original articles reviewed by our editorial team.</p>
               </div>
               <button
                 className="gbcms-button gbcms-button-primary"
@@ -313,7 +291,40 @@ export function GlobalBlogCMS({
                   </label>
                   <label>
                     Featured image
-                    <input name="featuredImage" type="file" accept="image/jpeg,image/jpg,image/png,image/webp" />
+                    <div className="gbcms-upload">
+                      <div className="gbcms-upload-preview">
+                        {imagePreview ? (
+                          <img src={imagePreview} alt="Selected featured image preview" />
+                        ) : (
+                          <span>16:9 image preview</span>
+                        )}
+                      </div>
+                      <div className="gbcms-upload-actions">
+                        <span>Upload a clear landscape image. It will be cropped to a uniform 16:9 ratio.</span>
+                        <div>
+                          <input
+                            id="gbcms-featured-image"
+                            name="featuredImage"
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                            onChange={(event) => setPreviewFile(event.target.files?.[0])}
+                          />
+                          {imagePreview && (
+                            <button
+                              className="gbcms-button gbcms-button-muted"
+                              type="button"
+                              onClick={() => {
+                                const input = document.getElementById('gbcms-featured-image') as HTMLInputElement | null;
+                                if (input) input.value = '';
+                                setPreviewFile(null);
+                              }}
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </label>
                   <label>
                     Content

@@ -3,6 +3,8 @@ import path from 'path';
 
 export const deleteUploadedFile = async (filePath) => {
   if (!filePath) return;
+  if (/^data:image\//i.test(filePath)) return;
+  if (/^https?:\/\//i.test(filePath)) return;
 
   const absolutePath = path.resolve(filePath);
 
