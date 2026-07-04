@@ -192,6 +192,10 @@ const request = async <T>(path: string, options: RequestInit = {}) => {
 
 const blogBase = (role: UserRole) => (role === 'SUPER_ADMIN' ? '/admin/blogs' : '/client/blogs');
 
+export type BlogUpdateInput = Blog & {
+  imageFile?: File | null;
+};
+
 export const api = {
   async login(identity: string, password: string, remember: boolean) {
     const isEmail = identity.includes('@');
@@ -239,10 +243,21 @@ export const api = {
     return payload.data?.blogs.map(mapBlog) || [];
   },
 
-  async updateBlog(role: UserRole, blog: Blog) {
-    const payload = await request<{ blog: BackendBlog }>(`${blogBase(role)}/${blog.id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({
+  async updateBlog(role: UserRole, blog: BlogUpdateInput) {
+    const body = blog.imageFile
+      ? (() => {
+          const formData = new FormData();
+          formData.set('title', blog.title);
+          formData.set('authorName', blog.author);
+          formData.set('authorEmail', blog.authorEmail);
+          formData.set('category', blog.category);
+          formData.set('content', blog.content);
+          formData.set('tags', blog.tags.join(','));
+          formData.set('featuredImage', blog.imageFile);
+          if (role === 'SUPER_ADMIN') formData.set('status', fromStatus(blog.status));
+          return formData;
+        })()
+      : JSON.stringify({
         title: blog.title,
         authorName: blog.author,
         authorEmail: blog.authorEmail,
@@ -251,7 +266,11 @@ export const api = {
         tags: blog.tags,
         featuredImage: blog.image,
         status: role === 'SUPER_ADMIN' ? fromStatus(blog.status) : undefined
-      })
+      });
+
+    const payload = await request<{ blog: BackendBlog }>(`${blogBase(role)}/${blog.id}`, {
+      method: 'PATCH',
+      body
     });
     if (!payload.data) throw new Error('Blog response missing data');
     return mapBlog(payload.data.blog);

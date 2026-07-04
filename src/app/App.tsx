@@ -22,6 +22,7 @@ import {
   type Client,
   type CreateClientInput,
   type DashboardData,
+  type BlogUpdateInput,
   type UpdateClientInput,
   type Website
 } from './services/api';
@@ -168,7 +169,7 @@ export default function App() {
     [refreshDashboard, role, screen]
   );
 
-  const handleSave = useCallback(async (updated: Blog) => {
+  const handleSave = useCallback(async (updated: BlogUpdateInput) => {
     if (!role) return;
 
     const saved = await api.updateBlog(role, updated);

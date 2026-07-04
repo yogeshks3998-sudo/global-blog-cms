@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, ImageIcon, X, CheckCircle2, Trash2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Blog, Screen } from '../mockData';
-import { CATEGORIES } from '../mockData';
+import type { BlogUpdateInput } from '../services/api';
 
 interface EditBlogProps {
   blog: Blog;
   onNavigate: (screen: Screen, blogId?: string) => void;
-  onSave: (blog: Blog) => Promise<void>;
+  onSave: (blog: BlogUpdateInput) => Promise<void>;
   onApprove: (id: string) => Promise<void>;
   onDelete: (id: string) => void;
   canApprove: boolean;
@@ -18,10 +18,32 @@ export function EditBlog({ blog, onNavigate, onSave, onApprove, onDelete, canApp
   const [tagInput, setTagInput] = useState('');
   const [saving, setSaving] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState('');
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
 
   const update = (field: keyof Blog, value: string | string[]) => {
     if (field === 'image') setImageFailed(false);
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateImageFile = (file?: File | null) => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+
+    if (!file) {
+      setImageFile(null);
+      setImagePreview('');
+      return;
+    }
+
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+    setImageFailed(false);
   };
 
   const addTag = () => {
@@ -42,7 +64,9 @@ export function EditBlog({ blog, onNavigate, onSave, onApprove, onDelete, canApp
     }
     setSaving(true);
     try {
-      await onSave(form);
+      await onSave({ ...form, imageFile });
+      setImageFile(null);
+      setImagePreview('');
       setSaving(false);
       toast.success('Blog saved successfully!');
     } catch (error) {
@@ -53,7 +77,7 @@ export function EditBlog({ blog, onNavigate, onSave, onApprove, onDelete, canApp
 
   const handleApprove = async () => {
     try {
-      await onSave(form);
+      await onSave({ ...form, imageFile });
       await onApprove(blog.id);
       onNavigate('blogs');
     } catch (error) {
@@ -109,8 +133,8 @@ export function EditBlog({ blog, onNavigate, onSave, onApprove, onDelete, canApp
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {/* Image section */}
         <div className="relative h-48 bg-slate-100 group overflow-hidden">
-          {form.image && !imageFailed ? (
-            <img src={form.image} alt="Featured" className="w-full h-full object-cover" onError={() => setImageFailed(true)} />
+          {(imagePreview || form.image) && !imageFailed ? (
+            <img src={imagePreview || form.image} alt="Featured" className="w-full h-full object-cover" onError={() => setImageFailed(true)} />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
               <ImageIcon size={36} />
@@ -120,10 +144,31 @@ export function EditBlog({ blog, onNavigate, onSave, onApprove, onDelete, canApp
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <label className="cursor-pointer bg-white text-slate-800 px-4 py-2 rounded-xl shadow" style={{ fontSize: '13px', fontWeight: 500 }}>
               Change Image
-              <input type="file" accept="image/*" className="hidden" />
+              <input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                className="hidden"
+                onChange={(event) => updateImageFile(event.target.files?.[0])}
+              />
             </label>
           </div>
         </div>
+
+        {imageFile && (
+          <div className="px-6 sm:px-8 py-3 bg-blue-50 border-b border-blue-100 flex items-center justify-between gap-3">
+            <p className="text-blue-700" style={{ fontSize: '13px', fontWeight: 500 }}>
+              New image selected: {imageFile.name}
+            </p>
+            <button
+              type="button"
+              onClick={() => updateImageFile(null)}
+              className="text-blue-600 hover:text-blue-800 transition-colors"
+              style={{ fontSize: '13px', fontWeight: 600 }}
+            >
+              Remove
+            </button>
+          </div>
+        )}
 
         <div className="p-6 sm:p-8 space-y-6">
           {/* Image URL */}
@@ -162,18 +207,14 @@ export function EditBlog({ blog, onNavigate, onSave, onApprove, onDelete, canApp
               <label className="block text-slate-700 mb-2" style={{ fontSize: '13px', fontWeight: 500 }}>
                 Category
               </label>
-              <select
+              <input
+                type="text"
                 value={form.category}
                 onChange={(e) => update('category', e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Category"
                 style={{ fontSize: '14px' }}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
             <div>
               <label className="block text-slate-700 mb-2" style={{ fontSize: '13px', fontWeight: 500 }}>
