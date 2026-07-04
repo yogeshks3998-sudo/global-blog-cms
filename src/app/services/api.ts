@@ -176,15 +176,31 @@ const request = async <T>(path: string, options: RequestInit = {}) => {
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers
-  });
-  const payload = (await response.json().catch(() => null)) as ApiResponse<T> | null;
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers
+    });
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Unable to connect to API');
+  }
+
+  const responseText = await response.text();
+  const payload = responseText
+    ? ((() => {
+        try {
+          return JSON.parse(responseText) as ApiResponse<T>;
+        } catch {
+          return null;
+        }
+      })())
+    : null;
 
   if (!response.ok || !payload?.success) {
     const validation = payload?.errors?.map((error) => error.message).join(', ');
-    throw new Error(validation || payload?.message || 'Request failed');
+    throw new Error(validation || payload?.message || `Request failed with status ${response.status}`);
   }
 
   return payload;
@@ -264,7 +280,6 @@ export const api = {
         category: blog.category,
         content: blog.content,
         tags: blog.tags,
-        featuredImage: blog.image,
         status: role === 'SUPER_ADMIN' ? fromStatus(blog.status) : undefined
       });
 
