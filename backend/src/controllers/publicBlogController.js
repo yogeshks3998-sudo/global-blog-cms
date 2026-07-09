@@ -5,6 +5,8 @@ import { successResponse } from '../utils/apiResponse.js';
 import { getBlogFilters, getPagination } from '../utils/queryHelpers.js';
 import { normalizeTags } from '../utils/normalizeTags.js';
 
+const listBlogFields = '_id websiteId title slug featuredImage authorName authorEmail category content tags status createdAt updatedAt';
+
 export const submitBlog = asyncHandler(async (req, res) => {
   const blog = await Blog.create({
     ...req.body,
@@ -27,6 +29,7 @@ export const getLatestBlogs = asyncHandler(async (req, res) => {
     websiteId: req.website._id,
     status: BLOG_STATUS.PUBLISHED
   })
+    .select(listBlogFields)
     .sort({ createdAt: -1 })
     .limit(limit);
 
@@ -44,7 +47,7 @@ export const getPublishedBlogs = asyncHandler(async (req, res) => {
   });
 
   const [blogs, total] = await Promise.all([
-    Blog.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Blog.find(filter).select(listBlogFields).sort({ createdAt: -1 }).skip(skip).limit(limit),
     Blog.countDocuments(filter)
   ]);
 

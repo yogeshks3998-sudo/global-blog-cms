@@ -45,13 +45,49 @@ export default function BlogPage() {
 - Write blog form
 - Optional featured image upload
 - Pagination
-- Search
 - Loading state
 - Error state
 - Empty state
 - API key header handling
 
 The package only calls public CMS endpoints. It never uses admin JWTs.
+
+## SEO Helpers
+
+The same package also includes an optional SEO helper export for client websites that want real `/blog` and `/blog/:slug` pages.
+
+```ts
+import {
+  getPublishedBlogs,
+  getPublishedBlogBySlug,
+  generateBlogMeta,
+  generateBlogJsonLd,
+  generateBlogSitemapUrls
+} from 'adversity-global-blog-cms-react/seo';
+```
+
+Example:
+
+```ts
+const blogs = await getPublishedBlogs({
+  apiUrl: 'https://global-blog-cms-api.onrender.com/api',
+  apiKey: 'CLIENT_API_KEY'
+});
+
+const blog = await getPublishedBlogBySlug({
+  apiUrl: 'https://global-blog-cms-api.onrender.com/api',
+  apiKey: 'CLIENT_API_KEY',
+  slug: 'my-blog-post'
+});
+
+const meta = generateBlogMeta({
+  blog,
+  siteName: 'Client Website',
+  siteUrl: 'https://clientwebsite.com'
+});
+```
+
+Use the React component for fast widget integration. Use `/seo` helpers when the client website is building real SEO pages.
 
 ## Theme Colors
 

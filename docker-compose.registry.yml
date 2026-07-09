@@ -1,0 +1,12 @@
+services:
+  backend:
+    image: ${DOCKER_IMAGE_PREFIX:-your-dockerhub-username/global-blog-cms}-backend:${IMAGE_TAG:-latest}
+    build:
+      context: ./backend
+
+  frontend:
+    image: ${DOCKER_IMAGE_PREFIX:-your-dockerhub-username/global-blog-cms}-frontend:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}

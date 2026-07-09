@@ -12,6 +12,8 @@ import { validateRequest } from '../middleware/validateRequest.js';
 
 const router = express.Router();
 
+router.options('*', (req, res) => res.sendStatus(204));
+
 router.use(requireWebsiteApiKey);
 
 router.post(
