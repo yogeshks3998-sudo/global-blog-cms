@@ -17,7 +17,7 @@ import 'adversity-global-blog-cms-react/styles.css';
 export default function BlogPage() {
   return (
     <GlobalBlogCMS
-      apiUrl="https://global-blog-cms-api.onrender.com/api"
+      apiUrl="http://blog.srisumerusuraksha.in/api"
       apiKey="CLIENT_API_KEY"
     />
   );
@@ -70,12 +70,12 @@ Example:
 
 ```ts
 const blogs = await getPublishedBlogs({
-  apiUrl: 'https://global-blog-cms-api.onrender.com/api',
+  apiUrl: 'http://blog.srisumerusuraksha.in/api',
   apiKey: 'CLIENT_API_KEY'
 });
 
 const blog = await getPublishedBlogBySlug({
-  apiUrl: 'https://global-blog-cms-api.onrender.com/api',
+  apiUrl: 'http://blog.srisumerusuraksha.in/api',
   apiKey: 'CLIENT_API_KEY',
   slug: 'my-blog-post'
 });

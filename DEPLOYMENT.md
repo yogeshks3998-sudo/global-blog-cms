@@ -29,19 +29,19 @@ CORS_ORIGIN=http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,ht
 
 ## Production
 
-Render backend environment:
+VPS backend environment:
 
 ```env
 NODE_ENV=production
 MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_long_secret
-CORS_ORIGIN=https://global-blog-cms.vercel.app
+CORS_ORIGIN=http://blog.srisumerusuraksha.in
 ```
 
-Vercel frontend environment:
+VPS frontend environment:
 
 ```env
-VITE_API_BASE_URL=https://global-blog-cms-api.onrender.com/api
+VITE_API_BASE_URL=/api
 ```
 
 After changing environment variables, redeploy the affected service.

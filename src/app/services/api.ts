@@ -10,7 +10,7 @@ const isLocalHost = (hostname: string) =>
 
 const DEFAULT_API_BASE_URL =
   typeof window !== 'undefined' && !isLocalHost(window.location.hostname)
-    ? 'https://global-blog-cms-api.onrender.com/api'
+    ? 'http://blog.srisumerusuraksha.in/api'
     : `${typeof window !== 'undefined' ? window.location.protocol : 'http:'}//127.0.0.1:5000/api`;
 
 const normalizeApiBaseUrl = (url: string) => {
